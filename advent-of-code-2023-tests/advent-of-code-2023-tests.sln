@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "advent-of-code-2023-tests", "advent-of-code-2023-tests\advent-of-code-2023-tests.csproj", "{1CAB57E0-CE7C-4F53-B177-8E8B1E21B089}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1CAB57E0-CE7C-4F53-B177-8E8B1E21B089}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CAB57E0-CE7C-4F53-B177-8E8B1E21B089}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CAB57E0-CE7C-4F53-B177-8E8B1E21B089}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CAB57E0-CE7C-4F53-B177-8E8B1E21B089}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
