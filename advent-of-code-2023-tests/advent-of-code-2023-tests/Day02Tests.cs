@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
@@ -20,6 +21,21 @@ namespace advent_of_code_2023_tests
             var subject = new GameEvaluator();
 
             int result = subject.Evaluate(input, 12, 13, 14);
+
+            result.Should().Be(expected);
+        }
+        
+        [Test]
+        [TestCase("Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green", 48)]
+        [TestCase("Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue", 12)]
+        [TestCase("Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red", 1560)]
+        [TestCase("Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red", 630)]
+        [TestCase("Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green", 36)]
+        public void EvaluatePower_ProvidesExpectedForGame(string input, int expected)
+        {
+            var subject = new GameEvaluator();
+
+            int result = subject.EvaluatePower(input);
 
             result.Should().Be(expected);
         }
@@ -52,14 +68,21 @@ namespace advent_of_code_2023_tests
                 "C:\\Projects\\Git\\advent-of-code-2023\\advent-of-code-2023-tests\\advent-of-code-2023-tests\\day02-puzzle-input.txt");
 
             var subject = new GameEvaluator();
-            int result = 0;
+            int result = lines.Sum(line => subject.Evaluate(line, 12, 13, 14));
 
-            foreach (var line in lines)
-            {
-                result += subject.Evaluate(line, 12, 13, 14);
-            }
+            result.Should().Be(2449);
+        }
+        
+        [Test]
+        public void PartTwo_GetsTheAnswer()
+        {
+            var lines = File.ReadAllLines(
+                "C:\\Projects\\Git\\advent-of-code-2023\\advent-of-code-2023-tests\\advent-of-code-2023-tests\\day02-puzzle-input.txt");
 
-            result.Should().Be(0);
+            var subject = new GameEvaluator();
+            int result = lines.Sum(line => subject.EvaluatePower(line));
+
+            result.Should().Be(63981);
         }
     }
 
@@ -135,6 +158,29 @@ namespace advent_of_code_2023_tests
             }
 
             return gameIsPossible ? game.id : 0;
+        }
+
+        public int EvaluatePower(string input)
+        {
+            var parser = new GameParser();
+            var game = parser.Parse(input);
+            var minRed = 0;
+            var minGreen = 0;
+            var minBlue = 0;
+            
+            foreach (var bagResult in game.BagResults)
+            {
+                if (bagResult.Red > minRed)
+                    minRed = bagResult.Red;
+
+                if (bagResult.Green > minGreen)
+                    minGreen = bagResult.Green;
+
+                if (bagResult.Blue > minBlue)
+                    minBlue = bagResult.Blue;
+            }
+
+            return minRed * minGreen * minBlue;
         }
     }
 }
