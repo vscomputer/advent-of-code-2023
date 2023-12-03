@@ -79,10 +79,12 @@ namespace advent_of_code_2023_tests
             var lines = File.ReadAllLines(
                 "C:\\Projects\\Git\\advent-of-code-2023\\advent-of-code-2023-tests\\advent-of-code-2023-tests\\day02-puzzle-input.txt");
 
+
             var subject = new GameEvaluator();
             int result = lines.Sum(line => subject.EvaluatePower(line));
 
             result.Should().Be(63981);
+
         }
     }
 
