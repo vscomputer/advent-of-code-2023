@@ -59,7 +59,7 @@ namespace advent_of_code_2023_tests
                 result += subject.Evaluate(line, 12, 13, 14);
             }
 
-            result.Should().Be(0);
+            result.Should().Be(2449);
         }
     }
 
