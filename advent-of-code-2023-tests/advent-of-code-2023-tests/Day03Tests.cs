@@ -152,9 +152,9 @@ namespace advent_of_code_2023_tests
         [Test]
         public void KeepsAdjacentCandidates_RealInput_GetsExampleSum()
         {
-            var exampleFilename =
+            var realFilename =
                 "C:\\Projects\\Git\\advent-of-code-2023\\advent-of-code-2023-tests\\advent-of-code-2023-tests\\day03-puzzle-input.txt";
-            var lines = File.ReadAllLines(exampleFilename);
+            var lines = File.ReadAllLines(realFilename);
             var parser = new ParsesSchematic();
             char[,] schematic = parser.Parse(lines);
 
@@ -170,29 +170,111 @@ namespace advent_of_code_2023_tests
 
             int result = adjacentCandidates.Sum(adjacentCandidate => adjacentCandidate.PartNumber);
 
-            result.Should().Be(0);
+            result.Should().Be(522726);
+        }
+
+        [Test]
+        public void FindsGears_Example_FindsGears()
+        {
+            var exampleFilename =
+                "C:\\Projects\\Git\\advent-of-code-2023\\advent-of-code-2023-tests\\advent-of-code-2023-tests\\day03-example-input.txt";
+            var lines = File.ReadAllLines(exampleFilename);
+            var parser = new ParsesSchematic();
+            char[,] schematic = parser.Parse(lines);
+
+            var getsCandidates = new GetsPartCandidates();
+            var getsSymbols = new GetsSymbols();
+            
+            var partCandidates = getsCandidates.GetPartCandidates(schematic);
+            var symbols = getsSymbols.GetSymbols(schematic);
+
+            var subject = new FindsGears();
+
+            List<int> result = subject.FindGearRatios(symbols, partCandidates);
+
+            result.Count.Should().Be(2);
+            result[0].Should().Be(16345);
         }
         
+        [Test]
+        public void FindsGears_RealInput_FindsSumOfGears()
+        {
+            var exampleFilename =
+                "C:\\Projects\\Git\\advent-of-code-2023\\advent-of-code-2023-tests\\advent-of-code-2023-tests\\day03-puzzle-input.txt";
+            var lines = File.ReadAllLines(exampleFilename);
+            var parser = new ParsesSchematic();
+            char[,] schematic = parser.Parse(lines);
 
+            var getsCandidates = new GetsPartCandidates();
+            var getsSymbols = new GetsSymbols();
+            
+            var partCandidates = getsCandidates.GetPartCandidates(schematic);
+            var symbols = getsSymbols.GetSymbols(schematic);
+
+            var subject = new FindsGears();
+
+            subject.FindGearRatios(symbols, partCandidates).Sum().Should().Be(81721933);
+        }
+    }
+    
+    public class FindsGears
+    {
+        public List<int> FindGearRatios(List<Symbol> symbols, List<PartCandidate> partCandidates)
+        {
+            var result = new List<int>();
+            foreach (Symbol symbol in symbols)
+            {
+                List<PartCandidate> adjacentParts = new List<PartCandidate>();
+                foreach (PartCandidate partCandidate in partCandidates)
+                {
+                    bool partFound = false;
+                    foreach (var unused in partCandidate.Positions.Where(position => SymbolIsAdjacentToPosition(symbol, position) && partFound == false))
+                    {
+                        adjacentParts.Add(partCandidate);
+                        partFound = true;
+                    }
+                }
+
+                if (adjacentParts.Count >= 2)
+                {
+                    int product = adjacentParts.Aggregate(1, (current, adjacentPart) => current * adjacentPart.PartNumber);
+                    result.Add(product);
+                }
+            }
+
+            return result;
+        }
+
+        private bool SymbolIsAdjacentToPosition(Symbol symbol, Position position)
+        {
+            if (CheckForSamePosition(symbol.Position.X - 1, symbol.Position.Y - 1, position)) return true;
+            if (CheckForSamePosition(symbol.Position.X, symbol.Position.Y - 1, position)) return true;
+            if (CheckForSamePosition(symbol.Position.X + 1, symbol.Position.Y - 1, position)) return true;
+            if (CheckForSamePosition(symbol.Position.X + 1, symbol.Position.Y, position)) return true;
+            if (CheckForSamePosition(symbol.Position.X + 1, symbol.Position.Y + 1, position)) return true;
+            if (CheckForSamePosition(symbol.Position.X, symbol.Position.Y + 1, position)) return true;
+            if (CheckForSamePosition(symbol.Position.X - 1, symbol.Position.Y + 1, position)) return true;
+            if (CheckForSamePosition(symbol.Position.X - 1, symbol.Position.Y , position)) return true;
+
+            return false;
+        }
+
+        private bool CheckForSamePosition(int positionX, int positionY, Position position)
+        {
+            return (positionX == position.X && positionY == position.Y);
+        }
     }
 
     public class KeepsAdjacentCandidates
     {
         public List<PartCandidate> KeepAdjacentCandidates(List<PartCandidate> partCandidates, List<Symbol> symbols)
         {
-            var result = new List<PartCandidate>();
-            foreach (PartCandidate partCandidate in partCandidates)
-            {
-                if(CandidateIsAdjacentToSymbol(partCandidate, symbols))
-                    result.Add(partCandidate);
-            }
-            return result;
+            return partCandidates.Where(partCandidate => CandidateIsAdjacentToSymbol(partCandidate, symbols)).ToList();
         }
 
         private static bool CandidateIsAdjacentToSymbol(PartCandidate partCandidate, List<Symbol> symbols)
         {
-            Position positionToCheck;
-            foreach (Position position in partCandidate.Positions)
+            foreach (var position in partCandidate.Positions)
             {
                 if (CheckForSymbolAtPosition(symbols, position.X - 1, position.Y - 1)) return true;
                 if (CheckForSymbolAtPosition(symbols, position.X , position.Y - 1)) return true;
