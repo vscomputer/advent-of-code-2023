@@ -84,11 +84,6 @@ namespace advent_of_code_2023_tests
             int result = lines.Sum(line => subject.EvaluatePower(line));
 
             result.Should().Be(63981);
-
-<<<<<<< HEAD
-=======
-            result.Should().Be(2449);
->>>>>>> 4fa49b8d6c2e2c770f2b85ff0ec016872481dacc
         }
     }
 
