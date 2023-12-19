@@ -128,6 +128,52 @@ namespace advent_of_code_2023_tests
             result[1].PartNumber.Should().Be(35);
         }
 
+        [Test]
+        public void KeepsAdjacentCandidates_Example_GetsExampleSum()
+        {
+            var exampleFilename =
+                "C:\\Projects\\Git\\advent-of-code-2023\\advent-of-code-2023-tests\\advent-of-code-2023-tests\\day03-example-input.txt";
+            var lines = File.ReadAllLines(exampleFilename);
+            var parser = new ParsesSchematic();
+            char[,] schematic = parser.Parse(lines);
+
+            var getsCandidates = new GetsPartCandidates();
+            var getsSymbols = new GetsSymbols();
+
+            var subject = new KeepsAdjacentCandidates();
+
+            List<PartCandidate> adjacentCandidates = subject.KeepAdjacentCandidates(getsCandidates.GetPartCandidates(schematic), getsSymbols.GetSymbols(schematic));
+
+            int result = adjacentCandidates.Sum(adjacentCandidate => adjacentCandidate.PartNumber);
+
+            result.Should().Be(4361);
+        }
+        
+        [Test]
+        public void KeepsAdjacentCandidates_RealInput_GetsExampleSum()
+        {
+            var exampleFilename =
+                "C:\\Projects\\Git\\advent-of-code-2023\\advent-of-code-2023-tests\\advent-of-code-2023-tests\\day03-puzzle-input.txt";
+            var lines = File.ReadAllLines(exampleFilename);
+            var parser = new ParsesSchematic();
+            char[,] schematic = parser.Parse(lines);
+
+            var getsCandidates = new GetsPartCandidates();
+            var getsSymbols = new GetsSymbols();
+
+            var subject = new KeepsAdjacentCandidates();
+
+            var partCandidates = getsCandidates.GetPartCandidates(schematic);
+            var symbols = getsSymbols.GetSymbols(schematic);
+
+            List<PartCandidate> adjacentCandidates = subject.KeepAdjacentCandidates(partCandidates, symbols);
+
+            int result = adjacentCandidates.Sum(adjacentCandidate => adjacentCandidate.PartNumber);
+
+            result.Should().Be(0);
+        }
+        
+
     }
 
     public class KeepsAdjacentCandidates
@@ -232,6 +278,14 @@ namespace advent_of_code_2023_tests
                         nextCandidate = new PartCandidate();
                     }
                 }
+                //if a line ends and we're still building a number, end it and start a new one.
+                if (!buildingCandidate) continue;
+                nextCandidate.PartNumber = int.Parse(candidatePartNumber);
+                result.Add(nextCandidate);
+                            
+                buildingCandidate = false;
+                candidatePartNumber = String.Empty;
+                nextCandidate = new PartCandidate();
             }
             return result;
         }
